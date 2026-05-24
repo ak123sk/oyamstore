@@ -1,0 +1,110 @@
+<div class="app-card-wrapper">
+    <div class="app-card" data-package="{package_name}">
+        <img src="{logo_url}" alt="{app_name}" class="app-icon" loading="lazy">
+        <div class="app-card-content">
+            <h3 class="app-name">{app_name}</h3>
+            <p class="app-developer">{developer_name}</p>
+            <div class="app-card-footer">
+                <div class="rating">
+                    <span class="stars">{stars_html}</span>
+                    <span class="rating-text">{rating} ({rating_count})</span>
+                </div>
+                <div class="app-meta">
+                    <span class="app-size">{size}</span>
+                    {price_html}
+                </div>
+            </div>
+            <button class="install-mini-btn" onclick="installApp('{package_name}')">
+                {install_text}
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .app-card-wrapper {
+        flex: 0 0 auto;
+        width: 280px;
+        margin: 10px;
+    }
+    
+    .app-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+    }
+    
+    .app-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .app-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .app-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #333;
+    }
+    
+    .app-developer {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+    }
+    
+    .app-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .stars {
+        color: #FFD700;
+        font-size: 12px;
+    }
+    
+    .rating-text {
+        font-size: 12px;
+        color: #666;
+    }
+    
+    .app-meta {
+        display: flex;
+        gap: 8px;
+        font-size: 12px;
+        color: #666;
+    }
+    
+    .install-mini-btn {
+        width: 100%;
+        padding: 8px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .install-mini-btn:hover {
+        background: #45a049;
+    }
+</style>
