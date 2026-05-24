@@ -1,6 +1,6 @@
 // API Configuration and Security
 const API_CONFIG = {
-    baseURL: '../devoloper/apk',
+    baseURL: 'https://oyamstore.great-site.net/devoloper/apk',
     endpoints: {
         apps: '/file',
         info: '/apk_info.json',
