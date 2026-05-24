@@ -1,0 +1,12 @@
+{
+  "categories": [
+    { "id": "tools", "name": "Tools", "icon": "fa-wrench", "color": "#2196F3" },
+    { "id": "photography", "name": "Photography", "icon": "fa-camera", "color": "#E91E63" },
+    { "id": "education", "name": "Education", "icon": "fa-graduation-cap", "color": "#9C27B0" },
+    { "id": "entertainment", "name": "Entertainment", "icon": "fa-film", "color": "#FF5722" },
+    { "id": "productivity", "name": "Productivity", "icon": "fa-tasks", "color": "#4CAF50" },
+    { "id": "social", "name": "Social", "icon": "fa-users", "color": "#00BCD4" },
+    { "id": "games", "name": "Games", "icon": "fa-gamepad", "color": "#FF9800" },
+    { "id": "finance", "name": "Finance", "icon": "fa-rupee-sign", "color": "#607D8B" }
+  ]
+}
