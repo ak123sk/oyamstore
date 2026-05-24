@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Dashboard - App Store</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h2 { margin-bottom: 20px; color: #333; }
+        
+        .form-group { margin-bottom: 15px; }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        textarea { min-height: 80px; resize: vertical; }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover { background: #45a049; }
+        
+        #uploadArea {
+            border: 2px dashed #4CAF50;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        #uploadArea:hover { background: #f0f9f0; }
+        
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .info-box {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .permission-item {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>📱 APK Upload & Manage</h2>
+            
+            <!-- Step 1: Upload -->
+            <div id="step1">
+                <div id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <h3>📦 APK File Select करें</h3>
+                    <p>Click करें या Drag & Drop करें</p>
+                    <input type="file" id="fileInput" accept=".apk" style="display:none">
+                </div>
+                <div class="progress" id="progressBar">
+                    <div class="progress-bar" id="progressFill"></div>
+                </div>
+                <div id="apkPreview"></div>
+            </div>
+            
+            <!-- Step 2: Details -->
+            <div id="step2" style="display:none;">
+                <h3>📝 App Details भरें</h3>
+                <form id="detailsForm">
+                    <div class="form-group">
+                        <label>App Name *</label>
+                        <input type="text" id="appName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Package Name</label>
+                        <input type="text" id="packageName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Version</label>
+                        <input type="text" id="version" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Short Description</label>
+                        <input type="text" id="shortDesc" maxlength="80">
+                    </div>
+                    <div class="form-group">
+                        <label>Full Description *</label>
+                        <textarea id="fullDesc" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="category" required>
+                            <option value="">Select</option>
+                            <option value="games">Games</option>
+                            <option value="tools">Tools</option>
+                            <option value="social">Social</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="productivity">Productivity</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Developer Name</label>
+                        <input type="text" id="devName">
+                    </div>
+                    <div class="form-group">
+                        <label>Developer Email</label>
+                        <input type="email" id="devEmail">
+                    </div>
+                    <div id="permissionsContainer"></div>
+                    <button type="submit">✅ Submit App</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedData = null;
+
+        // File upload handler
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.name.endsWith('.apk')) {
+                alert('कृपया .apk file ही select करें');
+                return;
+            }
+
+            // Show progress
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.style.display = 'block';
+            
+            // Simulate upload
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressBar.style.display = 'none';
+                    
+                    // Process APK (simulated)
+                    processAPK(file);
+                }
+            }, 200);
+        });
+
+        function processAPK(file) {
+            // Extract info from filename
+            const nameWithoutExt = file.name.replace('.apk', '');
+            
+            uploadedData = {
+                filename: file.name,
+                size: file.size,
+                package_name: 'com.example.' + nameWithoutExt.toLowerCase().replace(/[^a-z0-9]/g, ''),
+                version_name: '1.0.0',
+                version_code: '1',
+                app_name: nameWithoutExt,
+                permissions: [
+                    'android.permission.INTERNET',
+                    'android.permission.ACCESS_NETWORK_STATE',
+                    'android.permission.WRITE_EXTERNAL_STORAGE'
+                ]
+            };
+            
+            // Show preview
+            document.getElementById('apkPreview').innerHTML = `
+                <div class="info-box">
+                    <h4>✅ APK Processed</h4>
+                    <p><b>App:</b> ${uploadedData.app_name}</p>
+                    <p><b>Package:</b> ${uploadedData.package_name}</p>
+                    <p><b>Version:</b> ${uploadedData.version_name}</p>
+                    <p><b>Size:</b> ${(uploadedData.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <p><b>Permissions:</b> ${uploadedData.permissions.length}</p>
+                </div>
+            `;
+            
+            // Fill form
+            document.getElementById('appName').value = uploadedData.app_name;
+            document.getElementById('packageName').value = uploadedData.package_name;
+            document.getElementById('version').value = uploadedData.version_name;
+            
+            // Show permissions
+            let permHTML = '<div class="form-group"><label>Permissions</label>';
+            uploadedData.permissions.forEach(perm => {
+                permHTML += `
+                    <div class="permission-item">
+                        <strong>${perm}</strong>
+                        <input type="text" placeholder="यह permission क्यों चाहिए?" style="margin-top:5px;">
+                    </div>
+                `;
+            });
+            permHTML += '</div>';
+            document.getElementById('permissionsContainer').innerHTML = permHTML;
+            
+            // Show step 2
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        // Form submit
+        document.getElementById('detailsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                package_name: document.getElementById('packageName').value,
+                app_name: document.getElementById('appName').value,
+                version: document.getElementById('version').value,
+                version_code: uploadedData?.version_code || '1',
+                description: document.getElementById('fullDesc').value,
+                short_description: document.getElementById('shortDesc').value,
+                category: document.getElementById('category').value,
+                developer_name: document.getElementById('devName').value,
+                developer_email: document.getElementById('devEmail').value,
+                size: uploadedData?.size || 0,
+                filename: uploadedData?.filename || '',
+                is_free: true,
+                price: 0,
+                permissions: uploadedData?.permissions || [],
+                features: []
+            };
+            
+            // Save to apk_info.json (in real app, call process_data.php)
+            try {
+                const response = await fetch('process_data.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ App successfully saved!');
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Submit failed: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

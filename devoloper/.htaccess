@@ -1,0 +1,24 @@
+Options -Indexes
+
+<FilesMatch "\.(json|log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "^(upload|process_data|index)\.php$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+<FilesMatch "\.apk$">
+    Header set Content-Disposition "attachment"
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+RewriteEngine On
+RewriteRule ^apk/file/(.*)$ index.php?action=get_apk&file=$1 [L,QSA]
+RewriteRule ^apk/logo/(.*)$ index.php?action=get_logo&file=$1 [L,QSA]
+
+php_value upload_max_filesize 100M
+php_value post_max_size 100M
