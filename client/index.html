@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Store - Home</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <div id="navbar-container"></div>
+
+        <main class="main-content">
+            <section class="hero-section">
+                <div class="container">
+                    <h1>Discover Amazing Apps</h1>
+                    <p style="margin-top:10px;opacity:0.9;font-size:1rem;">Download trusted Android APKs safely & freely</p>
+                    <div class="search-box">
+                        <input type="text" id="main-search" placeholder="Search for apps, games, tools...">
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="featured-section">
+                <div class="container">
+                    <h2>⭐ Featured Apps</h2>
+                    <div class="app-grid" id="featured-apps">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="trending-section">
+                <div class="container">
+                    <h2>🔥 Trending Now</h2>
+                    <div class="app-grid" id="trending-apps">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="categories-section">
+                <div class="container">
+                    <h2>📂 Browse Categories</h2>
+                    <div class="category-grid" id="categories-list">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="footer-container"></div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

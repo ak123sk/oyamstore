@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Details - App Store</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <div id="navbar-container"></div>
+
+        <main class="app-detail-container">
+            <div class="container">
+                <div class="app-header" id="app-header">
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                </div>
+                <div class="app-content" id="app-content" style="display:none;">
+                    <div class="app-screenshots" id="app-screenshots"></div>
+
+                    <div class="app-description">
+                        <h2>About this app</h2>
+                        <p id="app-description"></p>
+                    </div>
+
+                    <div class="app-permissions">
+                        <h2>Permissions Required</h2>
+                        <ul id="app-permissions-list"></ul>
+                    </div>
+
+                    <div class="app-details-table">
+                        <h2>App Information</h2>
+                        <table>
+                            <tr><td>Package Name</td><td id="app-package"></td></tr>
+                            <tr><td>Version</td><td id="app-version-detail"></td></tr>
+                            <tr><td>Updated</td><td id="app-updated"></td></tr>
+                            <tr><td>Size</td><td id="app-size-detail"></td></tr>
+                            <tr><td>Installs</td><td id="app-installs"></td></tr>
+                            <tr><td>Required OS</td><td id="app-os-version"></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="related-apps-container"></div>
+            </div>
+        </main>
+
+        <div id="footer-container"></div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/install.js"></script>
+    <script src="assets/js/related.js"></script>
+    <script>
+        async function loadAppDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const packageName = urlParams.get('package');
+
+            if (!packageName) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const [appsInfo, appsExp, devInfo] = await Promise.all([
+                    APIService.fetchAppsInfo(),
+                    APIService.fetchAppsExperience(),
+                    APIService.fetchDeveloperInfo()
+                ]);
+
+                const app = appsInfo.apps.find(a => a.package_name === packageName);
+                if (!app) {
+                    document.getElementById('app-header').innerHTML = '<p style="padding:40px;text-align:center;color:#888;">App not found. <a href="index.html">Go Home</a></p>';
+                    return;
+                }
+
+                const exp = appsExp.apps.find(e => e.package_name === packageName) || {};
+                const dev = devInfo.developers.find(d => d.package_name === packageName) || {};
+                const stars = window.appStore ? window.appStore.generateStars(app.rating || 0) : '★★★★★';
+
+                document.title = app.name + ' - App Store';
+
+                document.getElementById('app-header').innerHTML = `
+                    <img id="app-icon" src="${APIService.getLogoURL(app.logo || '')}"
+                         alt="${SecurityManager.sanitizeInput(app.name)}"
+                         class="app-icon-large"
+                         onerror="this.src='assets/icons/default-app-icon.svg'">
+                    <div class="app-info">
+                        <h1>${SecurityManager.sanitizeInput(app.name)}</h1>
+                        <p id="app-developer">${SecurityManager.sanitizeInput(dev.name || 'AK Developer')}</p>
+                        <div class="app-rating">
+                            <span class="stars">${stars}</span>
+                            <span id="app-rating-count">${app.rating || 0} (${app.rating_count || 0} reviews)</span>
+                        </div>
+                        <div class="app-meta">
+                            <span id="app-category"><i class="fas fa-tag"></i> ${SecurityManager.sanitizeInput(app.category || '')}</span>
+                            <span id="app-size"><i class="fas fa-hdd"></i> ${app.size || 'N/A'}</span>
+                            <span id="app-version"><i class="fas fa-code-branch"></i> v${app.version || '1.0'}</span>
+                        </div>
+                    </div>
+                    <button id="install-btn" class="install-button" onclick="startDownload('${app.package_name}','${app.apk_file || ''}')">
+                        <i class="fas fa-download"></i> Install Free
+                    </button>
+                `;
+
+                document.getElementById('app-description').textContent = app.description || 'No description available.';
+
+                const permList = document.getElementById('app-permissions-list');
+                if (app.permissions && app.permissions.length > 0) {
+                    permList.innerHTML = app.permissions.map(p => `<li>${p}</li>`).join('');
+                } else {
+                    permList.innerHTML = '<li>No special permissions required</li>';
+                }
+
+                document.getElementById('app-package').textContent = app.package_name;
+                document.getElementById('app-version-detail').textContent = app.version || 'N/A';
+                document.getElementById('app-updated').textContent = app.updated || 'N/A';
+                document.getElementById('app-size-detail').textContent = app.size || 'N/A';
+                document.getElementById('app-installs').textContent = (exp.installs || app.downloads || 0).toLocaleString() + '+';
+                document.getElementById('app-os-version').textContent = app.os_version || 'Android 5.0+';
+
+                if (app.screenshots && app.screenshots.length > 0) {
+                    document.getElementById('app-screenshots').innerHTML = app.screenshots.map(s =>
+                        `<img src="${APIService.getAPKDownloadURL('../screenshots/' + s)}" alt="Screenshot">`
+                    ).join('');
+                } else {
+                    document.getElementById('app-screenshots').innerHTML = '<p class="no-screenshots"><i class="fas fa-images"></i> No screenshots available</p>';
+                }
+
+                document.getElementById('app-content').style.display = 'block';
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('app-header').innerHTML = '<p style="padding:40px;text-align:center;color:#f44;">Failed to load app. <a href="index.html">Go Home</a></p>';
+            }
+        }
+
+        function startDownload(packageName, apkFile) {
+            if (!apkFile) {
+                alert('APK file not available yet. Check back soon!');
+                return;
+            }
+            const url = APIService.getAPKDownloadURL(apkFile);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = apkFile;
+            a.click();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAppDetail);
+    </script>
+</body>
+</html>
